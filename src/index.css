@@ -17,6 +17,7 @@
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
+  --color-primary-strong: var(--primary-strong);
   --color-primary-foreground: var(--primary-foreground);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
@@ -54,6 +55,9 @@
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
   --primary:#CA823D;
+  /* Text-safe sibling of --primary: the brand orange only reaches 3.10:1
+     on white, below the 4.5:1 needed for body text. Same hue, 4.59:1. */
+  --primary-strong:#A5672D;
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
@@ -93,7 +97,7 @@
   --secondary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.269 0 0);
   --muted-foreground: oklch(0.708 0 0);
-  --accent: #45241B
+  --accent: #45241B;
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 10%);
@@ -177,4 +181,18 @@
 
 
 
+}
+
+/* Respect the OS "reduce motion" setting for CSS-driven motion.
+   Framer Motion is handled separately by <MotionConfig reducedMotion="user">
+   in main.jsx, which keeps opacity fades so content still reveals itself. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

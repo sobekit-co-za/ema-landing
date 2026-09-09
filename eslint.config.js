@@ -5,7 +5,10 @@ import reactRefresh from "eslint-plugin-react-refresh";
 
 export default [
   {
-    ignores: ["dist", "build", "node_modules"],
+    // "old emalyami" is the legacy Angular reference project, kept locally for
+    // content migration only (and gitignored). It ships 2019-era jQuery bundles
+    // that are not ours to lint.
+    ignores: ["dist", "build", "node_modules", "old emalyami"],
   },
   {
     files: ["**/*.{js,jsx}"],

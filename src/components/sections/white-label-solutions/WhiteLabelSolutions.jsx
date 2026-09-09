@@ -3,6 +3,8 @@ import { useInView } from "framer-motion";
 import { useRef } from "react";
 import SectionHeader from "@/components/shared/SectionHeader";
 import ManOnLaptop from "../../../assets/white-label-solutions/man-on-laptop.svg";
+import { WHITE_LABEL } from "@/content";
+import { Check } from "lucide-react";
 
 function WhiteLabelSolutions() {
   const ref = useRef(null);
@@ -115,8 +117,8 @@ function WhiteLabelSolutions() {
       {/* Header */}
       <motion.div variants={itemVariants}>
         <SectionHeader
-          title="White Label Solutions"
-          subtitle="Launch your branded platform in weeks using our 12-module ecosystem"
+          title={WHITE_LABEL.title}
+          subtitle={WHITE_LABEL.subtitle}
         />
       </motion.div>
 
@@ -159,8 +161,8 @@ function WhiteLabelSolutions() {
               ease: "easeOut",
             }}
           >
-            Your Brand,
-            <br /> Our Technology
+            {WHITE_LABEL.headline[0]}
+            <br /> {WHITE_LABEL.headline[1]}
           </motion.h2>
 
           <motion.p
@@ -176,16 +178,15 @@ function WhiteLabelSolutions() {
               ease: "easeOut",
             }}
           >
-            Transform your organization with a fully-customized digital finance
-            platform, that carries
+            {WHITE_LABEL.lead}
           </motion.p>
 
           {/* Animated Bars */}
           <div className="space-y-2 lg:space-y-3">
             {[
-              { width: "60%", color: "#CC6600", text: "YOUR name" },
-              { width: "80%", color: "#B25900", text: "YOUR identity" },
-              { width: "100%", color: "#994D00", text: "YOUR colors" },
+              { width: "60%", color: "#CC6600", text: WHITE_LABEL.bars[0] },
+              { width: "80%", color: "#B25900", text: WHITE_LABEL.bars[1] },
+              { width: "100%", color: "#994D00", text: WHITE_LABEL.bars[2] },
             ].map((bar, index) => (
               <motion.div
                 key={index}
@@ -203,7 +204,7 @@ function WhiteLabelSolutions() {
                 }}
               >
                 <motion.div
-                  className="pt-4 sm:pt-6 md:pt-8 lg:pt-10 text-2xl sm:text-3xl md:text-4xl lg:text-5xl leading-4 sm:leading-4.5 md:leading-6 lg:leading-8 text-white font-bold px-4"
+                  className="pt-4 sm:pt-6 md:pt-8 lg:pt-10 text-2xl sm:text-3xl md:text-4xl lg:text-5xl leading-4 sm:leading-4.5 md:leading-6 lg:leading-8 text-white font-bold px-4 py-3"
                   style={{ backgroundColor: bar.color }}
                   variants={barVariants}
                   custom={index}
@@ -225,6 +226,35 @@ function WhiteLabelSolutions() {
           </div>
         </motion.div>
       </div>
+
+      {/* What the partner actually receives — the previous version never said. */}
+      <motion.div className="grid gap-5 sm:grid-cols-2" variants={itemVariants}>
+        {[
+          { label: WHITE_LABEL.whatYouGetLabel, items: WHITE_LABEL.whatYouGet },
+          { label: WHITE_LABEL.corporateLabel, items: WHITE_LABEL.corporate },
+        ].map((group) => (
+          <div
+            key={group.label}
+            className="rounded-2xl border border-border/70 bg-card p-6"
+          >
+            <h3 className="mb-4 text-lg font-bold text-accent sm:text-xl">
+              {group.label}
+            </h3>
+            <ul className="space-y-2.5">
+              {group.items.map((item) => (
+                <li key={item} className="flex items-start gap-2.5">
+                  <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-primary/15 text-primary-strong">
+                    <Check size={12} strokeWidth={3} />
+                  </span>
+                  <span className="text-sm leading-snug text-muted-foreground sm:text-base">
+                    {item}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </motion.div>
     </motion.section>
   );
 }

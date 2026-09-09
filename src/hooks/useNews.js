@@ -1,4 +1,16 @@
 import newsApi from "@/services/newsApi";
+import toast from "@/lib/toast";
+
+/**
+ * Stable empty-list reference.
+ *
+ * `query.data?.data || []` built a NEW array on every render whenever the
+ * request was loading or failed. Any useEffect depending on that value then
+ * re-ran on every render — on NewsPage that meant setState → render → setState,
+ * an infinite loop that froze React ("Maximum update depth exceeded") and left
+ * the whole app unable to render another route until a full page reload.
+ */
+const EMPTY = Object.freeze([]);
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 const useNews = {
@@ -20,7 +32,7 @@ const useNews = {
 
     return {
       isLoadingPosts: query.isLoading,
-      posts: query.data?.data || [],
+      posts: query.data?.data ?? EMPTY,
       errorPosts: query.error,
       isErrorPosts: query.isError,
       refetchPosts: query.refetch,
@@ -69,7 +81,7 @@ const useNews = {
 
     return {
       isLoadingComments: query.isLoading,
-      comments: query.data?.data || [],
+      comments: query.data?.data ?? EMPTY,
       errorComments: query.error,
       isErrorComments: query.isError,
       refetchComments: query.refetch,

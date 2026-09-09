@@ -1,26 +1,16 @@
 import { Button } from "@/components/ui/button";
+import { CTA_BANNER } from "@/content";
 
 import Crown from "../../../assets/white-label-solutions/crown.svg";
 import HighVoltage from "../../../assets/white-label-solutions/high-voltage.svg";
 import Shield from "../../../assets/white-label-solutions/shield.svg";
 
-const items = [
-  {
-    emoji: HighVoltage,
-    description: "Launch in weeks, not years",
-    alt: "high-voltage",
-  },
-  {
-    emoji: Shield,
-    description: "Enterprise-Grade Foundation",
-    alt: "shield",
-  },
-  {
-    emoji: Crown,
-    description: "Complete Brand Control",
-    alt: "crown",
-  },
-];
+const ICONS = [HighVoltage, Shield, Crown];
+const items = CTA_BANNER.items.map((description, i) => ({
+  emoji: ICONS[i],
+  description,
+  alt: "",
+}));
 
 function CtaBanner() {
   return (
@@ -29,10 +19,10 @@ function CtaBanner() {
         <div className="flex flex-col justify-center lg:justify-between">
           <div>
             <h2 className="text-2xl md:text-4xl sm:text-3xl lg:text-5xl text-accent">
-              Start your <br /> Branded Platform
+              {CTA_BANNER.headline[0]} <br /> {CTA_BANNER.headline[1]}
             </h2>
             <h3 className="md:text-xl sm:text-lg text-md lg:text-2xl ">
-              Create Your Digital Platform
+              {CTA_BANNER.subhead}
             </h3>
           </div>
           <Button
@@ -40,7 +30,7 @@ function CtaBanner() {
               " bg-accent md:text-lg sm:text-md text-sm lg:text-xl py-6"
             }
           >
-            Request White-label Demo
+            {CTA_BANNER.cta}
           </Button>
         </div>
         <div className="">

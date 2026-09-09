@@ -1,0 +1,26 @@
+# Keep the build context to the sources the image actually needs.
+#
+# The Dockerfile runs `COPY . .`, so without this every local artefact ends up
+# in the build context: node_modules alone is ~250MB and is reinstalled inside
+# the image by `npm ci` anyway. CI builds from a clean checkout and never
+# noticed, but a local `docker build` would ship all of it.
+
+node_modules
+dist
+dist-ssr
+
+# Local branch archives — not part of the source tree.
+ema landing backup/
+
+.git
+.github
+.gitignore
+.dockerignore
+
+# Nothing below is read at build time.
+*.md
+.vscode
+.idea
+.DS_Store
+*.log
+.env*

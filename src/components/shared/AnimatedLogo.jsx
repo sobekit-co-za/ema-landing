@@ -1,6 +1,7 @@
-import NewLogo from "../../assets/shared/new_logo.svg";
+import NewLogo from "../../assets/shared/new_logo_2.png";
 import OldLogo from "../../assets/shared/old_logo.png";
 import { motion } from "framer-motion";
+import { SLOGAN } from "@/content";
 
 function AnimatedLogo({
   className = "",
@@ -12,7 +13,9 @@ function AnimatedLogo({
     <div
       className={
         containerClassName ||
-        "fixed z-50 flex flex-col items-center justify-center py-4 bottom-2 right-2 sm:py-6"
+        // Decorative watermark: pointer-events-none so it can never swallow
+        // clicks on the content beneath it (module cards reach the corner).
+        "pointer-events-none fixed z-40 bottom-2 right-2 flex flex-col items-center justify-center py-4 sm:py-6"
       }
       style={{ perspective: "800px" }}
     >
@@ -57,7 +60,9 @@ function AnimatedLogo({
       {/* Dynamic Slogan - Only show if showSlogan is true */}
       {showSlogan && (
         <motion.div
-          className="hidden mt-4 text-center sm:flex"
+          // The watermark drifts over light, dark and orange sections, so it
+          // carries its own backdrop — no single text colour is legible on all.
+          className="mt-4 hidden rounded-full bg-white/85 px-3 py-1 text-center shadow-sm backdrop-blur-sm sm:flex"
           key="slogan"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -88,8 +93,8 @@ function AnimatedLogo({
             >
               EMA • EMALYAMI
             </motion.span>
-            <span className="text-xs italic" style={{ color: "#c38b7d" }}>
-              Same vision, evolved experience
+            <span className="text-xs italic" style={{ color: "#9C6553" }}>
+              {SLOGAN}
             </span>
           </motion.p>
         </motion.div>

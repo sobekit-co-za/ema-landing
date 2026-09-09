@@ -1,9 +1,7 @@
-import { useState, useEffect, useRef } from "react";
-import {
-  generateText,
-  createPrompt,
-  formatLinks,
-} from "@/services/geminiService";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { ask, openingChips, USING_GEMINI } from "@/services/chatbot";
+import { RateLimitError } from "@/services/geminiService";
+import { CHATBOT } from "@/content";
 
 export const useChatbot = () => {
   const [chatHistory, setChatHistory] = useState([]);
@@ -11,12 +9,19 @@ export const useChatbot = () => {
   const [prompt, setPrompt] = useState("");
   const [isMinimized, setIsMinimized] = useState(true);
 
+  // The chips currently on offer. The local engine drives these; the Gemini
+  // engine simply never returns any, so the UI degrades to a plain text box.
+  const [chips, setChips] = useState(() =>
+    USING_GEMINI ? [] : openingChips()
+  );
+  // What the conversation is "about", so a bare "how much?" resolves.
+  const lastModuleId = useRef(null);
+
   const messagesEndRef = useRef(null);
 
-  // 📜 Auto-scroll to bottom when new messages arrive
   useEffect(() => {
     scrollToBottom();
-  }, [chatHistory]);
+  }, [chatHistory, chips]);
 
   const scrollToBottom = () => {
     setTimeout(() => {
@@ -28,70 +33,85 @@ export const useChatbot = () => {
   };
 
   /**
-   * 📤 Send message to AI
+   * Send one message. `text` lets a chip submit on the visitor's behalf
+   * without going through the input box.
    */
-  const sendMessage = async () => {
-    if (!prompt.trim() || loading) return;
+  const send = useCallback(
+    async (text, { display = text } = {}) => {
+      const userMessage = String(text ?? "").trim();
+      if (!userMessage || loading) return;
 
-    const userMessage = prompt.trim();
-    setPrompt("");
-    setLoading(true);
+      setPrompt("");
+      setLoading(true);
+      setChips([]);
 
-    // Add user message to chat (simple object, no types!)
-    setChatHistory((prev) => [
-      ...prev,
-      {
-        from: "user",
-        message: userMessage,
-        timestamp: new Date().toISOString(),
-      },
-    ]);
+      const historyBefore = chatHistory;
 
-    try {
-      // Create enhanced prompt with eMalyami context
-      const enhancedPrompt = createPrompt(userMessage.toLowerCase());
-
-      // Get AI response
-      const aiResponse = await generateText(enhancedPrompt);
-
-      let botMessage;
-
-      if (aiResponse.toLowerCase().includes("not relevant")) {
-        // Not relevant response
-        botMessage = {
-          from: "bot",
-          message:
-            "Please contact customer service via these emails: eMaCs0001@emalyami.com and eMaCs0002@emalyami.com.",
+      setChatHistory((prev) => [
+        ...prev,
+        {
+          from: "user",
+          // Chips send a __command but should read as their label in the
+          // transcript.
+          message: display.startsWith("__") ? display.slice(2) : display,
           timestamp: new Date().toISOString(),
-        };
-      } else {
-        // Format links in response
-        const formattedResponse = formatLinks(aiResponse);
-        botMessage = {
-          from: "bot",
-          message: aiResponse,
-          htmlMessage: formattedResponse,
-          timestamp: new Date().toISOString(),
-        };
+        },
+      ]);
+
+      try {
+        const answer = await ask(userMessage, {
+          history: historyBefore,
+          lastModuleId: lastModuleId.current,
+        });
+
+        if (answer.moduleId) lastModuleId.current = answer.moduleId;
+
+        setChatHistory((prev) => [
+          ...prev,
+          {
+            from: "bot",
+            message: answer.text,
+            htmlMessage: answer.html,
+            timestamp: new Date().toISOString(),
+          },
+        ]);
+        setChips(answer.chips ?? []);
+      } catch (error) {
+        console.error("Chatbot error:", error);
+        setChatHistory((prev) => [
+          ...prev,
+          {
+            from: "bot",
+            message:
+              error instanceof RateLimitError
+                ? `A lot of people are chatting right now. Please try again in about ${error.retryAfterSeconds} seconds.`
+                : "I'm sorry, I'm having trouble responding right now. Please try again later.",
+            timestamp: new Date().toISOString(),
+          },
+        ]);
+        setChips(USING_GEMINI ? [] : openingChips());
+      } finally {
+        setLoading(false);
       }
+    },
+    [chatHistory, loading]
+  );
 
-      setChatHistory((prev) => [...prev, botMessage]);
-    } catch (error) {
-      console.error("Chatbot error:", error);
-      const errorMessage = {
-        from: "bot",
-        message:
-          "I'm sorry, I'm having trouble responding right now. Please try again later.",
-        timestamp: new Date().toISOString(),
-      };
-      setChatHistory((prev) => [...prev, errorMessage]);
-    } finally {
-      setLoading(false);
-    }
+  const sendMessage = useCallback(() => send(prompt), [send, prompt]);
+
+  /** A chip sends its command but shows its label. */
+  const sendChip = useCallback(
+    (chipToSend) => send(chipToSend.send, { display: chipToSend.label }),
+    [send]
+  );
+
+  const toggleChat = () => setIsMinimized((v) => !v);
+
+  const clearChat = () => {
+    setChatHistory([]);
+    lastModuleId.current = null;
+    setChips(USING_GEMINI ? [] : openingChips());
   };
-
-  const toggleChat = () => setIsMinimized(!isMinimized);
-  const clearChat = () => setChatHistory([]);
 
   return {
     chatHistory,
@@ -100,8 +120,11 @@ export const useChatbot = () => {
     setPrompt,
     isMinimized,
     sendMessage,
+    sendChip,
+    chips,
     toggleChat,
     clearChat,
     messagesEndRef,
+    placeholder: CHATBOT.placeholder,
   };
 };

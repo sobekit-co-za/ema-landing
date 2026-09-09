@@ -14,7 +14,11 @@ import {
   Import,
 } from "lucide-react";
 
-import Logo from "../assets/shared/new_logo.svg";
+import Logo from "../assets/shared/new_logo_2.png";
+import toast from "@/lib/toast";
+import Seo from "@/components/shared/Seo";
+import { LANG_TAG, NEWS } from "@/content";
+import { SEO } from "@/content/seo";
 
 const NewsPage = () => {
   const [searchParams] = useSearchParams();
@@ -43,7 +47,8 @@ const NewsPage = () => {
   }, []);
 
   const formatTime = (timestamp) => {
-    return new Date(timestamp).toLocaleDateString("en-US", {
+    // Was hardcoded to "ar-EG", so every language showed Arabic dates.
+    return new Date(timestamp).toLocaleDateString(LANG_TAG, {
       year: "numeric",
       month: "short",
       day: "numeric",
@@ -70,47 +75,50 @@ const NewsPage = () => {
   const [likedPosts, setLikedPosts] = useState(new Set());
   const [postLikes, setPostLikes] = useState({});
 
-  // Initialize likes from posts data
+  // Seed like counts from the fetched posts.
+  // Writes state only when the derived map actually differs, so a re-render
+  // can never feed itself another update.
   useEffect(() => {
-    if (posts) {
-      const likesMap = {};
-      posts.forEach((post) => {
-        likesMap[post.id] = post.noOfLikes;
-      });
-      setPostLikes(likesMap);
-    }
+    if (!posts?.length) return;
+
+    const likesMap = {};
+    for (const post of posts) likesMap[post.id] = post.noOfLikes;
+
+    setPostLikes((prev) => {
+      const keys = Object.keys(likesMap);
+      const same =
+        keys.length === Object.keys(prev).length &&
+        keys.every((k) => prev[k] === likesMap[k]);
+      return same ? prev : likesMap;
+    });
   }, [posts]);
 
-  // const handleLike = (postId) => {
-  //   const isLiked = likedPosts.has(postId);
-  //   const newLikedPosts = new Set(likedPosts);
+  // Client-side only: the backend has no like endpoint.
+  const handleLike = (postId) => {
+    const isLiked = likedPosts.has(postId);
+    const newLikedPosts = new Set(likedPosts);
 
-  //   if (isLiked) {
-  //     newLikedPosts.delete(postId);
-  //     setPostLikes((prev) => ({ ...prev, [postId]: prev[postId] - 1 }));
-  //     toast.success("Like removed! 💔");
-  //   } else {
-  //     newLikedPosts.add(postId);
-  //     setPostLikes((prev) => ({ ...prev, [postId]: prev[postId] + 1 }));
-  //     toast.success("Post liked! ❤️");
-  //   }
+    if (isLiked) {
+      newLikedPosts.delete(postId);
+      setPostLikes((prev) => ({ ...prev, [postId]: (prev[postId] ?? 1) - 1 }));
+      toast.success("Like removed! 💔");
+    } else {
+      newLikedPosts.add(postId);
+      setPostLikes((prev) => ({ ...prev, [postId]: (prev[postId] ?? 0) + 1 }));
+      toast.success("Post liked! ❤️");
+    }
 
-  //   setLikedPosts(newLikedPosts);
-  // };
+    setLikedPosts(newLikedPosts);
+  };
 
-  // const handleShare = (postId) => {
-  //   const shareUrl = `${window.location.origin}/news?id=${postId}`;
-  //   navigator.clipboard.writeText(shareUrl);
-  //   toast.success("🔗 Link copied to clipboard!");
-  // };
-
+  // 🔄 Loading state
   // 🔄 Loading state
   if (isLoadingPosts) {
     return (
       <div className="pt-24 min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-blue-600" />
-          <p className="text-slate-600">Loading latest posts...</p>
+          <p className="text-slate-600">{NEWS.loading}</p>
         </div>
       </div>
     );
@@ -123,16 +131,14 @@ const NewsPage = () => {
         <div className="text-center max-w-md mx-auto px-4">
           <div className="bg-red-50 border border-red-200 rounded-lg p-6">
             <h2 className="text-lg font-semibold text-red-800 mb-2">
-              Unable to Load Posts
+              {NEWS.errorTitle}
             </h2>
-            <p className="text-red-600 mb-4">
-              Something went wrong while fetching the news.
-            </p>
+            <p className="text-red-600 mb-4">{NEWS.errorBody}</p>
             <button
               onClick={() => window.location.reload()}
               className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
             >
-              Try Again
+              {NEWS.retry}
             </button>
           </div>
         </div>
@@ -142,16 +148,17 @@ const NewsPage = () => {
 
   return (
     <div className="pt-24 min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
+      <Seo title={SEO.news.title} description={SEO.news.description} />
+
       {/* 🎨 Hero Section */}
       <div className="bg-white border-b border-slate-200">
         <div className="max-w-4xl mx-auto px-4 py-12">
           <div className="text-center">
             <h1 className="text-4xl font-bold text-slate-900 mb-4">
-              Latest News & Updates
+              {NEWS.title}
             </h1>
             <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-              Stay informed with our latest posts, insights, and community
-              discussions
+              {NEWS.subtitle}
             </p>
           </div>
         </div>
@@ -163,10 +170,10 @@ const NewsPage = () => {
           <div className="text-center py-12">
             <div className="bg-white rounded-xl p-8 shadow-sm">
               <h3 className="text-lg font-semibold text-slate-700 mb-2">
-                No Posts Yet
+                {NEWS.emptyTitle}
               </h3>
               <p className="text-slate-500">
-                Check back later for new content!
+                {NEWS.emptyBody}
               </p>
             </div>
           </div>
@@ -286,6 +293,7 @@ const NewsPage = () => {
                 {selectedPostId === post.id && (
                   <div className="border-t border-slate-200 bg-slate-50">
                     {/* Comment Form */}
+                    {/* Comment Form */}
                     <div className="p-6">
                       <form
                         onSubmit={handleCommentSubmit}
@@ -294,7 +302,7 @@ const NewsPage = () => {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <input
                             type="text"
-                            placeholder="Your name"
+                            placeholder={NEWS.namePlaceholder}
                             value={commentFormData.name}
                             onChange={(e) =>
                               setCommentFormData((prev) => ({
@@ -307,7 +315,7 @@ const NewsPage = () => {
                         </div>
                         <div className="flex space-x-3">
                           <textarea
-                            placeholder="Write your comment..."
+                            placeholder={NEWS.commentPlaceholder}
                             rows={3}
                             value={commentFormData.comment}
                             onChange={(e) =>
@@ -328,25 +336,26 @@ const NewsPage = () => {
                             ) : (
                               <Send className="h-4 w-4" />
                             )}
-                            <span>Post</span>
+                            <span>{NEWS.post}</span>
                           </button>
                         </div>
                       </form>
                     </div>
 
                     {/* Comments List */}
+                    {/* Comments List */}
                     <div className="px-6 pb-6">
                       {isLoadingComments ? (
                         <div className="flex items-center justify-center py-8">
                           <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
                           <span className="ml-2 text-slate-600">
-                            Loading comments...
+                            {NEWS.loadingComments}
                           </span>
                         </div>
                       ) : comments?.length > 0 ? (
                         <div className="space-y-4">
                           <h4 className="font-semibold text-slate-900">
-                            Comments ({comments.length})
+                            {NEWS.comments} ({comments.length})
                           </h4>
                           {comments.map((comment) => (
                             <div
@@ -376,7 +385,7 @@ const NewsPage = () => {
                         <div className="text-center py-8">
                           <MessageCircle className="h-12 w-12 text-slate-300 mx-auto mb-3" />
                           <p className="text-slate-500">
-                            No comments yet. Be the first to comment!
+                            {NEWS.noComments}
                           </p>
                         </div>
                       )}

@@ -1,320 +1,82 @@
 import { motion } from "framer-motion";
-import { useInView } from "framer-motion";
-import { useRef } from "react";
+import { Link } from "react-router";
+import { Link as ScrollLink } from "react-scroll";
+import { Banknote, Building2, Landmark, Store } from "lucide-react";
 import SectionHeader from "@/components/shared/SectionHeader";
-import PartnerCard from "./PartnerCard";
-import { FaRegBuilding } from "react-icons/fa";
-import { BriefcaseBusiness, Users, Wallet } from "lucide-react";
+import { PARTNER } from "@/content";
 
-import EmployeesTable from "../../../assets/be-our-partner/employees-table.svg";
-import FaceEmoji from "../../../assets/be-our-partner/face.svg";
-import HandshakeEmoji from "../../../assets/be-our-partner/Handshake.svg";
-import Underline from "../../../assets/who-are-we/needle-underline.svg";
+const ICONS = [Store, Landmark, Building2, Banknote];
 
+/**
+ * Four partner tracks. The previous version addressed governments, banks,
+ * resellers and shopkeepers with one generic pitch.
+ */
 function BeOurPartner() {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true });
-
-  // Animation variants
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.3,
-        duration: 0.8,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: {
-      opacity: 0,
-      y: 40,
-      filter: "blur(3px)",
-    },
-    visible: {
-      opacity: 1,
-      y: 0,
-      filter: "blur(0px)",
-      transition: {
-        duration: 0.8,
-        ease: [0.21, 0.47, 0.32, 0.98],
-      },
-    },
-  };
-
-  const slideInLeftVariants = {
-    hidden: {
-      opacity: 0,
-      x: -80,
-      filter: "blur(4px)",
-    },
-    visible: {
-      opacity: 1,
-      x: 0,
-      filter: "blur(0px)",
-      transition: {
-        duration: 0.9,
-        ease: "easeOut",
-      },
-    },
-  };
-
-  const slideInRightVariants = {
-    hidden: {
-      opacity: 0,
-      x: 80,
-      filter: "blur(4px)",
-    },
-    visible: {
-      opacity: 1,
-      x: 0,
-      filter: "blur(0px)",
-      transition: {
-        duration: 0.9,
-        ease: "easeOut",
-      },
-    },
-  };
-
-  const centerContentVariants = {
-    hidden: {
-      opacity: 0,
-      scale: 0.9,
-      filter: "blur(4px)",
-    },
-    visible: {
-      opacity: 1,
-      scale: 1,
-      filter: "blur(0px)",
-      transition: {
-        duration: 1,
-        delay: 0.4,
-        ease: "easeOut",
-      },
-    },
-  };
-
-  const underlineVariants = {
-    hidden: {
-      scaleX: 0,
-      opacity: 0,
-    },
-    visible: {
-      scaleX: 1,
-      opacity: 1,
-      transition: {
-        duration: 0.6,
-        delay: 1.2,
-        ease: "easeOut",
-      },
-    },
-  };
-
-  const emojiVariants = {
-    hidden: {
-      opacity: 0,
-      scale: 0,
-    },
-    visible: (i) => ({
-      opacity: 1,
-      scale: 1,
-      transition: {
-        duration: 0.5,
-        delay: 1.5 + i * 0.2,
-        ease: "easeOut",
-      },
-    }),
-  };
-
   return (
     <section
       id="partner"
-      ref={ref}
-      className="flex flex-col items-center px-12 py-16 space-y-16 lg:py-24 xl:px-32 overflow-x-hidden"
+      className="overflow-x-hidden px-6 py-12 sm:px-16 lg:py-16 xl:px-32"
     >
-      {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{
-          opacity: isInView ? 1 : 0,
-          y: isInView ? 0 : 30,
-        }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-      >
-        <SectionHeader
-          title="Be Our Partner"
-          subtitle="Transform Your Economy Through Partnership"
-        />
-      </motion.div>
+      <SectionHeader title={PARTNER.title} subtitle={PARTNER.subtitle} />
 
-      {/* Main Content */}
-      <motion.div
-        className="flex flex-col w-full xl:flex-row gap-9 max-w-7xl"
-        variants={containerVariants}
-        initial="hidden"
-        animate={isInView ? "visible" : "hidden"}
-      >
-        {/* Left Column - Partner Cards */}
-        <motion.div
-          className="flex flex-col flex-1 gap-2 sm:flex-row xl:gap-5 lg:gap-3 xl:flex-col"
-          variants={slideInLeftVariants}
-        >
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{
-              opacity: isInView ? 1 : 0,
-              y: isInView ? 0 : 30,
-            }}
-            transition={{ duration: 0.7, delay: 0.8, ease: "easeOut" }}
-          >
-            <PartnerCard
-              icon={Wallet}
-              title="For Financial Institutions"
-              description="Access 5 million unbanked users in Africa through our eWALLET and PAYMATE modules"
-              keyFeature1="Expand customer base instantly"
-              keyFeature2="Digital-first banking solutions"
-            />
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{
-              opacity: isInView ? 1 : 0,
-              y: isInView ? 0 : 30,
-            }}
-            transition={{ duration: 0.7, delay: 1, ease: "easeOut" }}
-          >
-            <PartnerCard
-              icon={Users}
-              title="For NGOs & Partners"
-              description="Reach rural communities with eMaClinic telemedicine and PATELE agricultural tools"
-              keyFeature1="Direct beneficiary access"
-              keyFeature2="Impact measurement tools"
-            />
-          </motion.div>
-        </motion.div>
+      <div className="mx-auto mt-10 grid max-w-6xl gap-5 sm:grid-cols-2">
+        {PARTNER.tracks.map((track, i) => {
+          const Icon = ICONS[i] ?? Store;
 
-        {/* Center Column - Main Content */}
-        <motion.div
-          className="flex flex-col items-center justify-between flex-1 md:flex-row xl:flex-col"
-          variants={centerContentVariants}
-        >
-          <motion.img
-            src={EmployeesTable}
-            alt="employees-table"
-            className="mb-8 sm:w-100 w-70 xl:mb-4"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{
-              opacity: isInView ? 1 : 0,
-              scale: isInView ? 1 : 0.8,
-            }}
-            transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
-          />
-
-          <div className="flex flex-col gap-4 px-4 xl:px-0">
-            <motion.h2
-              className="relative text-4xl font-medium sm:text-6xl"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{
-                opacity: isInView ? 1 : 0,
-                y: isInView ? 0 : 20,
+          return (
+            <motion.div
+              key={track.title}
+              initial={{ opacity: 0, y: 28, filter: "blur(3px)" }}
+              whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{
+                duration: 0.6,
+                delay: i * 0.1,
+                ease: [0.21, 0.47, 0.32, 0.98],
               }}
-              transition={{ duration: 0.7, delay: 0.8, ease: "easeOut" }}
+              className="flex flex-col rounded-2xl border border-border/70 bg-card p-6 shadow-sm transition-shadow duration-300 hover:shadow-lg"
             >
-              Partner with{" "}
-              <span className="relative">
-                eMa
-                <motion.img
-                  src={Underline}
-                  alt="underline"
-                  className="absolute bottom-0 right-0"
-                  variants={underlineVariants}
-                  initial="hidden"
-                  animate={isInView ? "visible" : "hidden"}
-                />
+              <span className="mb-4 grid size-11 place-items-center rounded-xl bg-accent text-primary">
+                <Icon size={20} />
               </span>
-            </motion.h2>
 
-            <div className="flex flex-col gap-3">
-              {[
-                {
-                  emoji: HandshakeEmoji,
-                  text: "Digitize MSME support, eliminate ghost beneficiaries.",
-                },
-                {
-                  emoji: FaceEmoji,
-                  text: "Reach 50 million affected youth through our 12-module ecosystem.",
-                },
-              ].map((item, index) => (
-                <motion.div
-                  key={index}
-                  className="flex items-center gap-3"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{
-                    opacity: isInView ? 1 : 0,
-                    x: isInView ? 0 : -20,
-                  }}
-                  transition={{
-                    duration: 0.6,
-                    delay: 1.2 + index * 0.2,
-                    ease: "easeOut",
-                  }}
+              <h3 className="mb-2 text-lg font-bold text-accent sm:text-xl">
+                {track.title}
+              </h3>
+              <p className="flex-1 text-sm leading-relaxed text-muted-foreground sm:text-base">
+                {track.detail}
+              </p>
+
+              {track.note && (
+                <p className="mt-3 text-sm font-medium text-primary-strong">
+                  {track.note}
+                </p>
+              )}
+
+              {track.cta && (
+                <ScrollLink
+                  to="white-label"
+                  smooth
+                  duration={500}
+                  offset={-80}
+                  className="mt-3 w-fit cursor-pointer text-sm font-medium text-accent underline-offset-4 transition-colors hover:text-primary-strong hover:underline"
                 >
-                  <motion.img
-                    src={item.emoji}
-                    alt={`emoji-${index}`}
-                    variants={emojiVariants}
-                    custom={index}
-                    initial="hidden"
-                    animate={isInView ? "visible" : "hidden"}
-                  />
-                  <p className="text-sm sm:text-xl text-accent">{item.text}</p>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </motion.div>
+                  {track.cta}
+                </ScrollLink>
+              )}
 
-        {/* Right Column - Partner Cards */}
-        <motion.div
-          className="flex flex-col flex-1 gap-2 sm:flex-row xl:gap-5 lg:gap-3 xl:flex-col"
-          variants={slideInRightVariants}
-        >
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{
-              opacity: isInView ? 1 : 0,
-              y: isInView ? 0 : 30,
-            }}
-            transition={{ duration: 0.7, delay: 1.4, ease: "easeOut" }}
-          >
-            <PartnerCard
-              icon={FaRegBuilding}
-              title="For Government Agencies"
-              description="Reduce administrative overhead by 85%, eliminate subsidy leakages."
-              keyFeature1="Automated compliance reporting"
-              keyFeature2="Transparent audit trails"
-            />
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{
-              opacity: isInView ? 1 : 0,
-              y: isInView ? 0 : 30,
-            }}
-            transition={{ duration: 0.7, delay: 1.6, ease: "easeOut" }}
-          >
-            <PartnerCard
-              icon={BriefcaseBusiness}
-              title="For Job Creations"
-              description="Connect employment agencies with millions rural job seekers"
-              keyFeature1="Rural Talent Access"
-              keyFeature2="Automated Skills Matching"
-            />
-          </motion.div>
-        </motion.div>
-      </motion.div>
+              {i === 0 && (
+                <Link
+                  to="/modules/paymate"
+                  className="mt-3 w-fit text-sm font-medium text-accent underline-offset-4 transition-colors hover:text-primary-strong hover:underline"
+                >
+                  PAYMATE →
+                </Link>
+              )}
+            </motion.div>
+          );
+        })}
+      </div>
     </section>
   );
 }

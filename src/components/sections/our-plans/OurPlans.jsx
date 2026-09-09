@@ -1,149 +1,151 @@
+import { motion } from "framer-motion";
+import { Check } from "lucide-react";
 import {
   Card,
-  CardAction,
   CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-
-import CheckMark from "../../../assets/white-label-solutions/check-mark.svg";
-import Handshake from "../../../assets/white-label-solutions/handshake.svg";
-import GemStone from "../../../assets/our-plans/gem-stone.svg";
-import Star from "../../../assets/our-plans/star.svg";
 import { Button } from "@/components/ui/button";
+import SectionHeader from "@/components/shared/SectionHeader";
+import { COMPANY, PRICING } from "@/content";
 
-// PLANS DATA CONFIG
-const plansCard = [
-  {
-    badgeTitle: "EVERYDAY",
-    badgeStyle: "bg-black/10 border border-black text-black",
-    planTitle: (
-      <>
-        4%<span className="text-2xl font-normal"> Rate</span>
-      </>
-    ),
-    planSubtitle: "Essential Services",
-    planDescription:
-      "Simple, everyday banking made affordable. Handle all your personal transactions with ease.",
-    emoji: CheckMark,
-    features: ["Send Money", "Cash Withdrawals", "P2P Business"],
-    ctaBtn: "Choose Standard",
-    ctaStyle: "bg-black text-white",
-  },
-  {
-    badgeTitle: "PARTNER WITH US",
-    badgeStyle: "bg-blue-100 border border-blue-600 text-blue-600",
-    planTitle: (
-      <span className="flex items-center gap-2 text-3xl">
-        White Label Solutions
-      </span>
-    ),
-    planSubtitle: "Partner Program",
-    planDescription:
-      "Power your business with our proven fintech platform — customize our technology under your brand.",
-    emoji: Handshake,
-
-    features: [
-      "Full Brand Customization",
-      "Ready-to-Deploy",
-      "Complete API Access",
-      "Real-time Analytics",
-      "Dedicated Support",
-    ],
-    ctaBtn: "Contact Us",
-    ctaStyle: "bg-blue-700 text-white",
-    // ctaStyle: "bg-black text-white",
-  },
-  {
-    badgeTitle: "BUSINESS",
-    badgeStyle: "bg-amber-100 border border-amber-600 text-amber-700",
-    planTitle: (
-      <>
-        5%<span className="text-2xl font-normal"> Rate</span>
-      </>
-    ),
-    planSubtitle: "Business Solutions",
-    planDescription:
-      "Complete business ecosystem designed for growth — from point-of-sale to funding solutions.",
-    emoji: GemStone,
-    features: [
-      "eMaSERVE",
-      "eMaMALL",
-      "eMaPOS",
-      "eMaFunding",
-      "eMaSave",
-      "eMaTuna",
-    ],
-    note: (
-      <div className="mt-2 text-xs font-medium text-gray-500">
-        Special Tiers: <br />
-        <span className="font-bold">Paymates</span> • 1.5-2% /{" "}
-        <span className="font-bold">SIBA</span> • 15%
-      </div>
-    ),
-    ctaBtn: "Choose Premium",
-    ctaStyle: "bg-amber-500 text-white",
-    // ctaStyle: "bg-black text-white",
-  },
-];
-
+/**
+ * Pricing. The three plan cards keep their original design; the fee table
+ * beneath is new — it states the per-module, event-based fee model, which is a
+ * selling point the site was previously hiding behind a bare "4%".
+ */
 function OurPlans() {
+  const openApp = () => window.open(COMPANY.apps.main, "_blank");
+
   return (
     <section
       id="pricing"
-      className="grid grid-cols-1 gap-10 px-4 py-16 mx-auto sm:px-8 md:px-16 xl:px-32 md:grid-cols-2 lg:grid-cols-3 max-w-7xl overflow-x-hidden"
+      className="overflow-x-hidden px-4 py-14 sm:px-8 md:px-16 xl:px-32"
     >
-      {plansCard.map((plan, idx) => (
-        <Card
-          key={plan.planTitle || idx}
-          className="relative flex flex-col justify-between h-full pt-12 shadow-lg"
-        >
-          {/* Badge */}
-          {plan.badgeTitle && (
-            <span
-              className={`absolute top-4 right-4 px-3 py-0.5 rounded-full uppercase tracking-wider text-xs font-semibold z-10 ${plan.badgeStyle}`}
-            >
-              {plan.badgeTitle}
-            </span>
-          )}
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-5xl font-bold">
-              {plan.planTitle}
-            </CardTitle>
-            <CardDescription>
-              <h3 className="text-xl font-bold">{plan.planSubtitle}</h3>
-              <p className="mt-1 text-gray-600">{plan.planDescription}</p>
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-2 mt-1">
-            {plan.features.map((feature) => (
-              <div key={feature} className="flex items-center gap-2">
-                <img src={plan.emoji} alt="" className="w-4 h-4" />
-                <p className="text-base">{feature}</p>
-              </div>
-            ))}
-            {plan.note}
-          </CardContent>
-          <CardFooter className="pt-6 mt-auto">
-            <CardAction asChild>
-              <Button
-                className={`${plan.ctaStyle} w-full`}
-                size="lg"
-                onClick={() =>
-                  window.open(
-                    "https://play.google.com/store/apps/details?id=com.emalyami.mobile&hl=en",
-                    "_blank"
-                  )
-                }
+      <SectionHeader title={PRICING.title} subtitle={PRICING.subtitle} />
+
+      <div className="mx-auto mt-10 grid max-w-7xl grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+        {PRICING.plans.map((plan, idx) => (
+          <motion.div
+            key={plan.badge}
+            initial={{ opacity: 0, y: 30, filter: "blur(3px)" }}
+            whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{
+              duration: 0.6,
+              delay: idx * 0.1,
+              ease: [0.21, 0.47, 0.32, 0.98],
+            }}
+          >
+            <Card className="relative flex h-full flex-col justify-between pt-12 shadow-lg">
+              <span
+                className={`absolute top-4 end-4 z-10 rounded-full px-3 py-0.5 text-xs font-semibold tracking-wider uppercase ${plan.badgeStyle}`}
               >
-                {plan.ctaBtn}
-              </Button>
-            </CardAction>
-          </CardFooter>
-        </Card>
-      ))}
+                {plan.badge}
+              </span>
+
+              <CardHeader>
+                <CardTitle className="flex items-baseline gap-2 text-4xl font-bold">
+                  {plan.rate}
+                  {plan.rateSuffix && (
+                    <span className="text-base font-normal text-muted-foreground">
+                      {plan.rateSuffix}
+                    </span>
+                  )}
+                </CardTitle>
+                <CardDescription>
+                  <span className="block text-xl font-bold text-foreground">
+                    {plan.subtitle}
+                  </span>
+                  <span className="mt-1 block text-muted-foreground">
+                    {plan.description}
+                  </span>
+                </CardDescription>
+              </CardHeader>
+
+              <CardContent className="mt-1 flex flex-col gap-2">
+                {plan.features.map((feature) => (
+                  <div key={feature} className="flex items-center gap-2">
+                    <span className="grid size-4 shrink-0 place-items-center rounded-full bg-primary/15 text-primary-strong">
+                      <Check size={10} strokeWidth={3} />
+                    </span>
+                    <p className="text-base">{feature}</p>
+                  </div>
+                ))}
+
+                {plan.note && (
+                  <p className="mt-2 text-xs font-medium text-muted-foreground">
+                    {plan.noteLabel}
+                    <br />
+                    <span className="font-bold">{plan.note}</span>
+                  </p>
+                )}
+              </CardContent>
+
+              <CardFooter className="mt-auto pt-6">
+                <Button
+                  className={`${plan.ctaStyle} w-full`}
+                  size="lg"
+                  onClick={openApp}
+                >
+                  {plan.cta}
+                </Button>
+              </CardFooter>
+            </Card>
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Per-module fee table */}
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-60px" }}
+        transition={{ duration: 0.6, ease: [0.21, 0.47, 0.32, 0.98] }}
+        className="mx-auto mt-10 max-w-3xl overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm"
+      >
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse text-start">
+            <thead>
+              <tr className="border-b border-border/70 bg-muted/50">
+                <th className="px-5 py-3 text-start text-xs font-medium tracking-wide text-primary-strong uppercase">
+                  {PRICING.feeTableHeaders.module}
+                </th>
+                <th className="px-5 py-3 text-start text-xs font-medium tracking-wide text-primary-strong uppercase">
+                  {PRICING.feeTableHeaders.when}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {PRICING.fees.map((row) => (
+                <tr
+                  key={row.module}
+                  className="border-b border-border/50 last:border-0"
+                >
+                  <td className="px-5 py-3 text-sm font-medium whitespace-nowrap text-accent">
+                    {row.module}
+                  </td>
+                  <td className="px-5 py-3 text-sm text-muted-foreground">
+                    {row.when}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/*
+          Published rates are country-specific. Saying so on the page keeps a
+          reader in Kenya or eSwatini from reading the South African schedule
+          as their own.
+        */}
+        <p className="border-t border-border/50 px-5 py-4 text-xs leading-relaxed text-muted-foreground">
+          {PRICING.feeNote}
+        </p>
+      </motion.div>
     </section>
   );
 }

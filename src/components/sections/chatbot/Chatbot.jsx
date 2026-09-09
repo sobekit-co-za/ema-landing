@@ -9,6 +9,7 @@ import {
   User,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { CHATBOT } from "@/content";
 
 const Chatbot = () => {
   const {
@@ -18,6 +19,8 @@ const Chatbot = () => {
     setPrompt,
     isMinimized,
     sendMessage,
+    sendChip,
+    chips,
     toggleChat,
     clearChat,
     messagesEndRef,
@@ -143,7 +146,7 @@ const Chatbot = () => {
                 >
                   <Bot className="h-5 w-5" />
                 </motion.div>
-                <h3 className="font-semibold">eMa Assistant</h3>
+                <h3 className="font-semibold">{CHATBOT.title}</h3>
               </div>
               <div className="flex items-center space-x-2">
                 <motion.button
@@ -151,7 +154,7 @@ const Chatbot = () => {
                   whileTap={{ scale: 0.9 }}
                   onClick={clearChat}
                   className="text-white/80 hover:text-white transition-colors"
-                  title="Clear chat"
+                  title={CHATBOT.clear}
                 >
                   <X className="h-4 w-4" />
                 </motion.button>
@@ -160,7 +163,7 @@ const Chatbot = () => {
                   whileTap={{ scale: 0.9 }}
                   onClick={toggleChat}
                   className="text-white/80 hover:text-white transition-colors"
-                  title="Minimize"
+                  title={CHATBOT.minimize}
                 >
                   <Minimize2 className="h-4 w-4" />
                 </motion.button>
@@ -194,8 +197,8 @@ const Chatbot = () => {
                   >
                     <Bot className="h-12 w-12 mx-auto mb-3 text-gray-400" />
                   </motion.div>
-                  <p>Hi! I'm your eMa assistant.</p>
-                  <p className="text-sm">How can I help you today?</p>
+                  <p>{CHATBOT.greeting}</p>
+                  <p className="text-sm">{CHATBOT.greetingSub}</p>
                 </motion.div>
               )}
 
@@ -304,7 +307,7 @@ const Chatbot = () => {
                           transition={{ duration: 1.5, repeat: Infinity }}
                           className="text-sm"
                         >
-                          Thinking...
+                          {CHATBOT.thinking}
                         </motion.span>
                       </div>
                     </div>
@@ -314,6 +317,34 @@ const Chatbot = () => {
 
               <div ref={messagesEndRef} />
             </motion.div>
+
+            {/* Guided chips — the front door, and the way out when the
+                assistant is not sure what was meant. */}
+            <AnimatePresence>
+              {chips.length > 0 && !loading && (
+                <motion.div
+                  key="chips"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 8 }}
+                  transition={{ duration: 0.2 }}
+                  className="flex flex-wrap gap-2 px-4 pb-1"
+                >
+                  {chips.map((chip) => (
+                    <motion.button
+                      key={chip.label}
+                      type="button"
+                      whileHover={{ scale: 1.04 }}
+                      whileTap={{ scale: 0.96 }}
+                      onClick={() => sendChip(chip)}
+                      className="px-3 py-1.5 text-xs rounded-full border border-[#AF6553]/40 text-[#AF6553] bg-white hover:bg-[#AF6553] hover:text-white transition-colors"
+                    >
+                      {chip.label}
+                    </motion.button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* Input with slide-up animation */}
             <motion.form
@@ -330,10 +361,11 @@ const Chatbot = () => {
                   value={prompt}
                   onChange={(e) => setPrompt(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  placeholder="Ask me anything about eMa..."
+                  placeholder={CHATBOT.placeholder}
                   className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#AF6553] focus:border-transparent text-sm transition-all"
                   disabled={loading}
                 />
+
                 <motion.button
                   whileHover={{
                     scale: 1.05,
@@ -362,7 +394,7 @@ const Chatbot = () => {
         whileTap="tap"
         onClick={toggleChat}
         className="text-white p-3 rounded-full shadow-lg transition-all"
-        title={isMinimized ? "Open chat" : "Close chat"}
+        title={isMinimized ? CHATBOT.open : CHATBOT.close}
       >
         <motion.div
           animate={{ rotate: isMinimized ? 0 : 180 }}

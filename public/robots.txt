@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://ema.emalyami.com/sitemap.xml
