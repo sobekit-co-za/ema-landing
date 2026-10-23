@@ -7,6 +7,7 @@ import ModuleDetailPage from "./pages/ModuleDetailPage";
 import FaqPage from "./pages/FaqPage";
 import HelpPage from "./pages/HelpPage";
 import LegalPage from "./pages/LegalPage";
+import ChildSafetyPage from "./pages/ChildSafetyPage";
 
 function App() {
   return (
@@ -37,6 +38,9 @@ function App() {
             path="/fraud-awareness"
             element={<LegalPage variant="fraud" />}
           />
+
+          {/* Public Child Safety Standards URL required by Google Play for eMaSocial. */}
+          <Route path="/child-safety" element={<ChildSafetyPage />} />
 
           {/* Anything else lands on the home page rather than on nothing. */}
           <Route path="*" element={<Home />} />
