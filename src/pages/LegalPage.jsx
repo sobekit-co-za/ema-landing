@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import Seo from "@/components/shared/Seo";
 import { LEGAL } from "@/content/legal";
 import {
+  INTER_COMPANY_DISPUTE_SCHEDULE,
   POLICY_AND_TERMS,
   USAGE_GUIDELINES,
 } from "@/services/legacyPolicyText";
@@ -65,13 +66,15 @@ function Document({ text }) {
 
 /**
  * `variant` picks which document this route publishes:
- *   terms   — the full user agreement
+ *   terms   — the full user agreement, followed by the inter-company
+ *             dispute resolution schedule that forms part of it
  *   privacy — the same agreement, framed on its privacy clauses
  *   fraud   — the usage guidelines, preceded by the practical rules
  */
 function LegalPage({ variant }) {
   const page = LEGAL[variant];
   const isFraud = variant === "fraud";
+  const isTerms = variant === "terms";
 
   return (
     <div className="px-6 pt-32 pb-16 sm:px-16 xl:px-32">
@@ -114,6 +117,12 @@ function LegalPage({ variant }) {
         </p>
 
         <Document text={isFraud ? USAGE_GUIDELINES : POLICY_AND_TERMS} />
+
+        {isTerms && (
+          <div className="mt-12 border-t border-border/70 pt-4">
+            <Document text={INTER_COMPANY_DISPUTE_SCHEDULE} />
+          </div>
+        )}
       </div>
     </div>
   );

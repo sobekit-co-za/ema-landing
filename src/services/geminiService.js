@@ -1,6 +1,10 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import buildKnowledgeBase from "./knowledgeBase";
-import { USAGE_GUIDELINES, POLICY_AND_TERMS } from "./legacyPolicyText";
+import {
+  USAGE_GUIDELINES,
+  POLICY_AND_TERMS,
+  INTER_COMPANY_DISPUTE_SCHEDULE,
+} from "./legacyPolicyText";
 
 const MODEL = "gemini-3.6-flash";
 
@@ -81,6 +85,8 @@ const SYSTEM_INSTRUCTION = [
   USAGE_GUIDELINES,
   "",
   POLICY_AND_TERMS,
+  "",
+  INTER_COMPANY_DISPUTE_SCHEDULE,
 ].join("\n");
 
 const generationConfig = {
